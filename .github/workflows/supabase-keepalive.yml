@@ -1,0 +1,20 @@
+# Pings the RSVP database once a day so Supabase's free plan doesn't pause it.
+# Needs repository secrets SUPABASE_URL and SUPABASE_KEY.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "17 22 * * *"   # daily, about 9am Sydney
+  workflow_dispatch:         # lets you run it by hand from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call ping()
+        run: |
+          curl --fail --silent --show-error -X POST \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/ping" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
